@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: ConservativeStaking
-    network: polygon-amoy
+    network: matic
     source:
       abi: ConservativeStaking
-      address: "0x9de8f5e56aa71521FB3fC6bDe3c4225FD232C483"
-      startBlock: 5932026
+      address: "0xBFF71fa4a5Ac368E0Ce8B45ca32Adf1EB7555555"
+      startBlock: 53906922
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -37,11 +37,11 @@ dataSources:
       file: ./src/conservative-staking.ts
   - kind: ethereum
     name: DynamicStaking
-    network: polygon-amoy
+    network: matic
     source:
       abi: DynamicStaking
-      address: "0xEf00FAB4133aC06041b94fC1Bb1F239be8AB022A"
-      startBlock: 5932030
+      address: "0xbF7A6Dd53C3EecEF0b83837E9beBf29260888888"
+      startBlock: 55318944
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -85,7 +85,7 @@ templates:
           handler: handleProfitDistribution
         - event: NewClaimable(indexed address,indexed uint256)
           handler: handleNewClaimable
-    network: polygon-amoy
+    network: matic
   - kind: ethereum/contract
     name: DynamicStakingPool
     source:
@@ -108,4 +108,4 @@ templates:
           handler: handleProfitDistribution
         - event: NewProfit(indexed address,indexed uint256)
           handler: handleNewProfit
-    network: polygon-amoy
+    network: matic
