@@ -1,0 +1,53 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: ConservativeStaking
+    network: matic
+    source:
+      address: "0xBFF71fa4a5Ac368E0Ce8B45ca32Adf1EB7555555"
+      abi: ConservativeStaking
+      startBlock: 53906922
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Claimed
+        - NewCalculationWindow
+        - NewMinAllowedAmount
+        - PoolClosed
+        - PoolOpened
+        - RoleAdminChanged
+        - RoleGranted
+        - RoleRevoked
+        - Staked
+        - Withdraw
+      abis:
+        - name: ConservativeStaking
+          file: ./abis/ConservativeStaking.json
+      eventHandlers:
+        - event: Claimed(indexed address,uint256)
+          handler: handleClaimed
+        - event: NewCalculationWindow(indexed uint256)
+          handler: handleNewCalculationWindow
+        - event: NewMinAllowedAmount(indexed uint256)
+          handler: handleNewMinAllowedAmount
+        - event: PoolClosed(indexed address)
+          handler: handlePoolClosed
+        - event: PoolOpened(indexed address)
+          handler: handlePoolOpened
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: Staked(indexed address,uint256)
+          handler: handleStaked
+        - event: Withdraw(indexed address,uint256)
+          handler: handleWithdraw
+      file: ./src/conservative-staking.ts

@@ -1,0 +1,7 @@
+{
+	"name": "luro-shared",
+	"devDependencies": {
+		"@types/bun": "latest",
+		"lefthook": "^1.9.3"
+	}
+}
