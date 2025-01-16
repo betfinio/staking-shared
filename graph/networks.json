@@ -1,8 +1,22 @@
 {
-  "matic": {
-    "ConservativeStaking": {
-      "address": "0xBFF71fa4a5Ac368E0Ce8B45ca32Adf1EB7555555",
-      "startBlock": 53906922
-    }
-  }
+	"matic": {
+		"ConservativeStaking": {
+			"address": "0xBFF71fa4a5Ac368E0Ce8B45ca32Adf1EB7555555",
+			"startBlock": 53906922
+		},
+		"DynamicStaking": {
+			"address": "0xbF7A6Dd53C3EecEF0b83837E9beBf29260888888",
+			"startBlock": 55318944
+		}
+	},
+	"polygon-amoy": {
+		"ConservativeStaking": {
+			"address": "0x9de8f5e56aa71521FB3fC6bDe3c4225FD232C483",
+			"startBlock": 5932026
+		},
+		"DynamicStaking": {
+			"address": "0xEf00FAB4133aC06041b94fC1Bb1F239be8AB022A",
+			"startBlock": 5932030
+		}
+	}
 }

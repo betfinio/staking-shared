@@ -1,4 +1,4 @@
-specVersion: 1.0.0
+specVersion: 1.2.0
 indexerHints:
   prune: auto
 schema:
@@ -6,48 +6,106 @@ schema:
 dataSources:
   - kind: ethereum
     name: ConservativeStaking
-    network: matic
+    network: polygon-amoy
     source:
-      address: "0xBFF71fa4a5Ac368E0Ce8B45ca32Adf1EB7555555"
       abi: ConservativeStaking
-      startBlock: 53906922
+      address: "0x9de8f5e56aa71521FB3fC6bDe3c4225FD232C483"
+      startBlock: 5932026
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
         - Claimed
-        - NewCalculationWindow
-        - NewMinAllowedAmount
-        - PoolClosed
         - PoolOpened
-        - RoleAdminChanged
-        - RoleGranted
-        - RoleRevoked
         - Staked
         - Withdraw
       abis:
         - name: ConservativeStaking
           file: ./abis/ConservativeStaking.json
+        - name: ConservativeStakingPool
+          file: ./abis/ConservativeStakingPool.json
       eventHandlers:
         - event: Claimed(indexed address,uint256)
           handler: handleClaimed
-        - event: NewCalculationWindow(indexed uint256)
-          handler: handleNewCalculationWindow
-        - event: NewMinAllowedAmount(indexed uint256)
-          handler: handleNewMinAllowedAmount
-        - event: PoolClosed(indexed address)
-          handler: handlePoolClosed
         - event: PoolOpened(indexed address)
           handler: handlePoolOpened
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
-          handler: handleRoleAdminChanged
-        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
-        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
         - event: Staked(indexed address,uint256)
           handler: handleStaked
         - event: Withdraw(indexed address,uint256)
           handler: handleWithdraw
       file: ./src/conservative-staking.ts
+  - kind: ethereum
+    name: DynamicStaking
+    network: polygon-amoy
+    source:
+      abi: DynamicStaking
+      address: "0xEf00FAB4133aC06041b94fC1Bb1F239be8AB022A"
+      startBlock: 5932030
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - PoolOpened
+        - Staked
+      abis:
+        - name: DynamicStaking
+          file: ./abis/DynamicStaking.json
+        - name: DynamicStakingPool
+          file: ./abis/DynamicStakingPool.json
+      eventHandlers:
+        - event: PoolOpened(indexed address)
+          handler: handlePoolOpened
+        - event: Staked(indexed address,uint256)
+          handler: handleStaked
+          calls:
+            pool: DynamicStaking[event.address].currentPool()
+      file: ./src/dynamic-staking.ts
+templates:
+  - kind: ethereum/contract
+    name: ConservativeStakingPool
+    source:
+      abi: ConservativeStakingPool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/conservative-staking-pool.ts
+      entities:
+        - ProfitDistribution
+        - NewClaimable
+      abis:
+        - name: ConservativeStakingPool
+          file: ./abis/ConservativeStakingPool.json
+        - name: ConservativeStaking
+          file: ./abis/ConservativeStaking.json
+      eventHandlers:
+        - event: ProfitDistribution(indexed uint256)
+          handler: handleProfitDistribution
+        - event: NewClaimable(indexed address,indexed uint256)
+          handler: handleNewClaimable
+    network: polygon-amoy
+  - kind: ethereum/contract
+    name: DynamicStakingPool
+    source:
+      abi: DynamicStakingPool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/dynamic-staking-pool.ts
+      entities:
+        - ProfitDistribution
+        - NewClaimable
+      abis:
+        - name: DynamicStakingPool
+          file: ./abis/DynamicStakingPool.json
+        - name: DynamicStaking
+          file: ./abis/DynamicStaking.json
+      eventHandlers:
+        - event: ProfitDistribution(indexed uint256)
+          handler: handleProfitDistribution
+        - event: NewProfit(indexed address,indexed uint256)
+          handler: handleNewProfit
+    network: polygon-amoy

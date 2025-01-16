@@ -1,6 +1,72 @@
-type ExampleEntity @entity {
-  id: Bytes!
-  count: BigInt!
-  staker: Bytes! # address
-  amount: BigInt! # uint256
+type Claim @entity(immutable: true) {
+    id: Bytes!
+    staker: Bytes! # address
+    amount: BigInt! # uint256
+    blockNumber: BigInt!
+    blockTimestamp: BigInt!
+    transactionHash: Bytes!
+    address: Bytes! # address
+}
+
+type Pool @entity {
+    id: Bytes!
+    pool: Bytes! # address
+    staking: Bytes! # address
+    lastDistributed: BigInt!
+    blockNumber: BigInt!
+    blockTimestamp: BigInt!
+    transactionHash: Bytes!
+}
+
+type Stake @entity(immutable: true) {
+    id: Bytes!
+    staker: Bytes! # address
+    pool: Bytes! # address
+    unlock:BigInt!# uint256
+    amount: BigInt! # uint256
+    address: Bytes! # address
+    reward: BigInt!
+    blockNumber: BigInt!
+    blockTimestamp: BigInt!
+    transactionHash: Bytes!
+}
+
+type Withdraw @entity(immutable: true) {
+    id: Bytes!
+    staker: Bytes! # address
+    amount: BigInt! # uint256
+    blockNumber: BigInt!
+    blockTimestamp: BigInt!
+    transactionHash: Bytes!
+}
+
+type ProfitDistribution @entity(immutable: true) {
+    id: Bytes!
+    pool: Bytes! # address
+    amount: BigInt! # uint256
+    totalStaked: BigInt! # uint256
+    blockNumber: BigInt!
+    blockTimestamp: BigInt!
+    transactionHash: Bytes!
+}
+
+type Profit @entity(immutable: true) {
+    id: Bytes!
+    pool: Bytes! # address
+    staker: Bytes! # address
+    amount: BigInt! # uint256
+    blockNumber: BigInt!
+    blockTimestamp: BigInt!
+    transactionHash: Bytes!
+}
+
+
+type Claimable @entity(immutable: true) {
+    id: Bytes!
+    pool: Bytes! # address
+    staker: Bytes! # address
+    amount: BigInt! # uint256
+    blockNumber: BigInt!
+    blockTimestamp: BigInt!
+    transactionHash: Bytes!
 }
