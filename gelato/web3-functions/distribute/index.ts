@@ -6,7 +6,7 @@ import { Address, encodeFunctionData, parseAbi } from "viem";
 import { request } from "graphql-request";
 
 const query = (staking: Address, last: number) => `{
-  pools(where: {staking: "${staking}", lastDistributed_lt: "${last}"}, first: 10) {
+  pools(where: {staking: "${staking}", lastDistributed_lt: "${last}"}, first: 5) {
     pool
   }
 }`;
