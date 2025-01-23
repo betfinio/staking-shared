@@ -9,18 +9,18 @@ export function handleProfitDistribution(event: ProfitDistributionEvent): void {
 	const staking = context.getBytes("staking");
 	
 	const profit = new ProfitDistribution(event.transaction.hash.concatI32(event.logIndex.toI32()));
-	
-	profit.pool = event.address;
+	const pool = Pool.load(event.address);
+	if (pool === null) {
+		throw new Error(`Pool ${ event.address.toHexString() } do not exist`)
+	}
+	profit.pool = pool.id;
 	profit.amount = event.params.amount;
 	profit.blockNumber = event.block.number;
 	profit.totalStaked = ConservativeStaking.bind(Address.fromBytes(staking)).totalStaked();
 	profit.blockTimestamp = event.block.timestamp;
 	profit.transactionHash = event.transaction.hash;
 	profit.save();
-	const pool = Pool.load(event.address);
-	if (pool === null) {
-		throw new Error(`Pool ${ event.address.toHexString() } do not exist`)
-	}
+	
 	pool.lastDistributed = event.block.timestamp;
 	pool.save();
 }

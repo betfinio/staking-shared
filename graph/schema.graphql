@@ -42,7 +42,7 @@ type Withdraw @entity(immutable: true) {
 
 type ProfitDistribution @entity(immutable: true) {
     id: Bytes!
-    pool: Bytes! # address
+    pool: Pool! # address
     amount: BigInt! # uint256
     totalStaked: BigInt! # uint256
     blockNumber: BigInt!
