@@ -5,8 +5,8 @@ import {
 import { Address, encodeFunctionData, parseAbi } from "viem";
 import { request } from "graphql-request";
 
-const query = (staking: Address, last: number) => `{
-  pools(where: {staking: "${staking}", lastDistributed_lt: "${last}"}, first: 5) {
+const query = (staking: Address, last: number, count: number) => `{
+  pools(where: {staking: "${staking}", lastDistributed_lt: "${last}"}, first: ${count}) {
     pool
   }
 }`;
@@ -19,12 +19,14 @@ Web3Function.onRun(async (context: Web3FunctionContext) => {
 
   // get graph url
   const graphUrl = (await secrets.get("STAKING_URL"))!;
+  const count = (await secrets.get("COUNT"))!;
 
-  const last = Math.floor(Date.now() / 1000) - 60 * 60 * 24; // fetch pools that was not distributed in last 24 hours
+  const last =
+    Math.floor(Date.now() / 1000 / 60 / 60 / 24) * 60 * 60 * 24 + 12 * 60 * 60; // fetch pools that was not distributed from end of cycle
 
   const data = await request<{ pools: { pool: Address }[] }>(
     graphUrl,
-    query(stakingAddress, last),
+    query(stakingAddress, last, Number(count)),
   );
   const pools = data.pools.map((pool) => ({
     to: pool.pool,
