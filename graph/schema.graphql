@@ -8,7 +8,7 @@ type Claim @entity(immutable: true) {
     address: Bytes! # address
 }
 
-type Pool @entity {
+type Pool @entity(immutable: false) {
     id: Bytes!
     pool: Bytes! # address
     staking: Bytes! # address
