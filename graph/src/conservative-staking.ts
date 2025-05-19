@@ -9,7 +9,7 @@ import {
 import { Claim, Pool, Stake, Withdraw } from "../generated/schema";
 import { ConservativeStakingPool } from "../generated/ConservativeStaking/ConservativeStakingPool";
 // biome-ignore lint/suspicious/noShadowRestrictedNames: shadowing
-import { BigInt, DataSourceContext } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes, DataSourceContext } from "@graphprotocol/graph-ts";
 import { ConservativeStakingPool as PoolTemplate } from "../generated/templates";
 
 export function handlePoolOpened(event: PoolOpenedEvent): void {
@@ -29,18 +29,31 @@ export function handlePoolOpened(event: PoolOpenedEvent): void {
 }
 
 export function handleClaimed(event: ClaimedEvent): void {
-	const entity = new Claim(
-		event.transaction.hash.concatI32(event.logIndex.toI32()),
-	);
-	entity.staker = event.params.staker;
-	entity.amount = event.params.amount;
-
-	entity.blockNumber = event.block.number;
-	entity.blockTimestamp = event.block.timestamp;
-	entity.transactionHash = event.transaction.hash;
-	entity.address = event.address;
-
-	entity.save();
+	const receipt = event.receipt;
+	const transferSignature = Bytes.fromHexString("0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"); // signature of ERC20 transfer event
+   
+	if(receipt) {
+		const logs = receipt.logs;
+		for(let i = 0; i < logs.length; i++) {
+			const log = logs[i];
+			if(log.topics[0].equals(transferSignature)) {
+				const amount = log.data;
+		
+				const entity = new Claim(
+					event.transaction.hash.concatI32(log.logIndex.toI32()),
+				);
+			
+				entity.staker = event.params.staker;
+				entity.amount = BigInt.fromByteArray(amount);
+			
+				entity.blockNumber = event.block.number;
+				entity.blockTimestamp = event.block.timestamp;
+				entity.transactionHash = event.transaction.hash;
+				entity.address = event.address;
+				entity.save();
+			}
+		}
+	} 
 }
 
 export function handleStaked(event: StakedEvent): void {

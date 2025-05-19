@@ -28,6 +28,7 @@ dataSources:
       eventHandlers:
         - event: Claimed(indexed address,uint256)
           handler: handleClaimed
+          receipt: true
         - event: PoolOpened(indexed address)
           handler: handlePoolOpened
         - event: Staked(indexed address,uint256)
