@@ -37,19 +37,21 @@ export function handleClaimed(event: ClaimedEvent): void {
 		for(let i = 0; i < logs.length; i++) {
 			const log = logs[i];
 			if(log.topics[0].equals(transferSignature)) {
-				const amount = log.data;
 		
 				const entity = new Claim(
 					event.transaction.hash.concatI32(log.logIndex.toI32()),
 				);
-			
-				entity.staker = event.params.staker;
-				entity.amount = BigInt.fromByteArray(amount);
+	
+				const bigintfromBytes = BigInt.fromUnsignedBytes(changetype<Bytes>(log.data.reverse()));
+				entity.amount = bigintfromBytes;
 			
 				entity.blockNumber = event.block.number;
 				entity.blockTimestamp = event.block.timestamp;
 				entity.transactionHash = event.transaction.hash;
-				entity.address = event.address;
+
+				entity.staker = event.params.staker;
+				entity.address = event.params.staker;
+
 				entity.save();
 			}
 		}
