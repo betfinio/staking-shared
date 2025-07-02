@@ -31,20 +31,20 @@ export function handlePoolOpened(event: PoolOpenedEvent): void {
 export function handleClaimed(event: ClaimedEvent): void {
 	const receipt = event.receipt;
 	const transferSignature = Bytes.fromHexString("0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"); // signature of ERC20 transfer event
-   
-	if(receipt) {
+
+	if (receipt) {
 		const logs = receipt.logs;
-		for(let i = 0; i < logs.length; i++) {
+		for (let i = 0; i < logs.length; i++) {
 			const log = logs[i];
-			if(log.topics[0].equals(transferSignature)) {
-		
+			if (log.topics[0].equals(transferSignature)) {
+
 				const entity = new Claim(
 					event.transaction.hash.concatI32(log.logIndex.toI32()),
 				);
-	
+
 				const bigintfromBytes = BigInt.fromUnsignedBytes(changetype<Bytes>(log.data.reverse()));
 				entity.amount = bigintfromBytes;
-			
+
 				entity.blockNumber = event.block.number;
 				entity.blockTimestamp = event.block.timestamp;
 				entity.transactionHash = event.transaction.hash;
@@ -55,7 +55,7 @@ export function handleClaimed(event: ClaimedEvent): void {
 				entity.save();
 			}
 		}
-	} 
+	}
 }
 
 export function handleStaked(event: StakedEvent): void {
