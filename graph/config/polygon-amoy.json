@@ -1,11 +1,11 @@
 {
 	"network": "polygon-amoy",
 	"ConservativeStaking": {
-		"startBlock": 23419440,
-		"address": "0xd21E09FF7901cFb062500a494131047802d0fEfC"
+		"startBlock": 23461117,
+		"address": "0x97C652D28eeE2C22aCd5Ab88038e84C18D1271E6"
 	},
 	"DynamicStaking": {
-		"address": "0xA1B79B29708bcef0409931249583D12670A3d2bF",
-		"startBlock": 23419440
+		"address": "0x2284f0C60775850b9409630B3191F58Ff1D5a342",
+		"startBlock": 23461117
 	}
 }
