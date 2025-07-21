@@ -9,7 +9,10 @@
 		"build:prod": "graph build --network matic",
 		"build:silent": "graph build",
 		"deploy:dev": "graph deploy --node https://api.studio.thegraph.com/deploy/ staking-dev --network polygon-amoy",
-		"deploy:prod": "graph deploy --node https://api.studio.thegraph.com/deploy/ staking-prod --network matic"
+		"deploy:prod": "graph deploy --node https://api.studio.thegraph.com/deploy/ staking-prod --network matic",
+		"create-local": "graph create members-dev --node http://127.0.0.1:8020",
+		"deploy-local": "graph deploy members-dev --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
+	},
 	},
 	"dependencies": {
 		"@graphprotocol/graph-cli": "^0.97.0",
