@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: ConservativeStaking
-    network: polygon-amoy
+    network: {{ network }}
     source:
       abi: ConservativeStaking
-      address: "0x9de8f5e56aa71521FB3fC6bDe3c4225FD232C483"
-      startBlock: 5932026
+      address: "{{ ConservativeStaking.address }}"
+      startBlock: {{ ConservativeStaking.startBlock }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -38,11 +38,11 @@ dataSources:
       file: ./src/conservative-staking.ts
   - kind: ethereum
     name: DynamicStaking
-    network: polygon-amoy
+    network: {{ network }}
     source:
       abi: DynamicStaking
-      address: "0xEf00FAB4133aC06041b94fC1Bb1F239be8AB022A"
-      startBlock: 5932030
+      address: "{{ DynamicStaking.address }}"
+      startBlock: {{ DynamicStaking.startBlock }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -86,7 +86,7 @@ templates:
           handler: handleProfitDistribution
         - event: NewClaimable(indexed address,indexed uint256)
           handler: handleNewClaimable
-    network: polygon-amoy
+    network: {{ network }}
   - kind: ethereum/contract
     name: DynamicStakingPool
     source:
@@ -109,4 +109,4 @@ templates:
           handler: handleProfitDistribution
         - event: NewProfit(indexed address,indexed uint256)
           handler: handleNewProfit
-    network: polygon-amoy
+    network: {{ network }}

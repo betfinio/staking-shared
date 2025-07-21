@@ -2,17 +2,19 @@
 	"name": "staking-shared",
 	"license": "UNLICENSED",
 	"scripts": {
-		"codegen": "graph codegen",
+		"codegen": "bun run prepare:dev && graph codegen",
 		"dev": "bun run codegen && bun run build:dev && bun run deploy:dev",
 		"prod": "bun run codegen && bun run build:prod && bun run deploy:prod",
-		"build:dev": "graph build --network polygon-amoy",
-		"build:prod": "graph build --network matic",
+		"prepare:dev": "bunx mustache config/polygon-amoy.json template.subgraph.yaml > subgraph.yaml",
+		"prepare:prod": "bunx mustache config/matic.json template.subgraph.yaml > subgraph.yaml",
+		"build:dev": "bun run prepare:dev && graph build",
+		"build:prod": "bun run prepare:prod && graph build",
 		"build:silent": "graph build",
-		"deploy:dev": "graph deploy --node https://api.studio.thegraph.com/deploy/ staking-dev --network polygon-amoy",
-		"deploy:prod": "graph deploy --node https://api.studio.thegraph.com/deploy/ staking-prod --network matic",
 		"create-local": "graph create members-dev --node http://127.0.0.1:8020",
-		"deploy-local": "graph deploy members-dev --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
-	},
+		"deploy-local": "graph deploy members-dev --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
+		"deploy:dev": "graph deploy --node https://api.studio.thegraph.com/deploy/ staking-dev",
+		"deploy:prod": "graph deploy --node https://api.studio.thegraph.com/deploy/ staking-prod",
+		"test": "graph test"
 	},
 	"dependencies": {
 		"@graphprotocol/graph-cli": "^0.97.0",
