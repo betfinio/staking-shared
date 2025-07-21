@@ -5,8 +5,9 @@
 		"codegen": "bun run prepare:dev && graph codegen",
 		"dev": "bun run codegen && bun run build:dev && bun run deploy:dev",
 		"prod": "bun run codegen && bun run build:prod && bun run deploy:prod",
-		"prepare:dev": "bunx mustache config/polygon-amoy.json template.subgraph.yaml > subgraph.yaml",
-		"prepare:prod": "bunx mustache config/matic.json template.subgraph.yaml > subgraph.yaml",
+		"prepare:dev": "chmod +x scripts/prepare-subgraph.sh && ./scripts/prepare-subgraph.sh dev",
+		"prepare:prod": "chmod +x scripts/prepare-subgraph.sh && ./scripts/prepare-subgraph.sh prod",
+		"prepare:local": "chmod +x scripts/prepare-subgraph.sh && ./scripts/prepare-subgraph.sh local",
 		"build:dev": "bun run prepare:dev && graph build",
 		"build:prod": "bun run prepare:prod && graph build",
 		"build:silent": "graph build",
@@ -21,6 +22,7 @@
 		"@graphprotocol/graph-ts": "^0.38.0"
 	},
 	"devDependencies": {
-		"matchstick-as": "0.5.0"
+		"matchstick-as": "^0.6.0",
+		"mustache": "^4.2.0"
 	}
 }
