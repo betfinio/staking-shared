@@ -16,9 +16,10 @@ type Pool @entity(immutable: false) {
     blockNumber: BigInt!
     blockTimestamp: BigInt!
     transactionHash: Bytes!
+    stakes:[Stake!]! 
 }
 
-type Stake @entity(immutable: true) {
+type Stake @entity(immutable: false) {
     id: Bytes!
     staker: Bytes! # address
     pool: Bytes! # address
@@ -29,16 +30,12 @@ type Stake @entity(immutable: true) {
     blockNumber: BigInt!
     blockTimestamp: BigInt!
     transactionHash: Bytes!
+    unstaked:Boolean!
+    unstakedAt:BigInt!
+    unstakeTransactionHash:Bytes
 }
 
-type Withdraw @entity(immutable: true) {
-    id: Bytes!
-    staker: Bytes! # address
-    amount: BigInt! # uint256
-    blockNumber: BigInt!
-    blockTimestamp: BigInt!
-    transactionHash: Bytes!
-}
+
 
 type ProfitDistribution @entity(immutable: true) {
     id: Bytes!
