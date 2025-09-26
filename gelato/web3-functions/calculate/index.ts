@@ -40,25 +40,25 @@ async function getProgress(storage: any, currentCycle: bigint) {
   const storageData = await storage.get("calculateProgress");
   let lastProcessed = 0;
   let storedCycle = BigInt(0);
-  
+
   if (storageData) {
     const parsed = JSON.parse(storageData);
     lastProcessed = parsed.lastProcessed || 0;
     storedCycle = BigInt(parsed.cycle || 0);
   }
-  
+
   // reset if cycle changed
   if (storedCycle !== currentCycle) {
     lastProcessed = 0;
   }
-  
+
   return lastProcessed;
 }
 
 // Recursively find optimal pool count that fits gas limit
 async function findOptimalPoolCount(client: any, stakingAddress: Address, lastProcessed: number, pools: number, gasLimit: number): Promise<number> {
   if (pools <= 0) return 1; // minimum 1 pool
-  
+
   const estimatedGas = await client.estimateGas({
     to: stakingAddress,
     data: encodeFunctionData({
@@ -67,12 +67,12 @@ async function findOptimalPoolCount(client: any, stakingAddress: Address, lastPr
       args: [BigInt(lastProcessed), BigInt(pools)],
     }),
   });
-  
+
   if (estimatedGas <= BigInt(gasLimit)) {
     return pools; // this amount fits in gas limit
   }
-    
-    // recursively reduce by half
+
+  // recursively reduce by half
   return findOptimalPoolCount(client, stakingAddress, lastProcessed, Math.floor(pools / 2), gasLimit);
 
 }
@@ -86,16 +86,6 @@ async function simulateContractCalls(client: any, stakingAddress: Address, curre
     functionName: "calculateProfit",
     args: [BigInt(lastProcessed), BigInt(poolsToProcess)],
   });
-  
-  // simulate currentPool distribution if it's the first batch
-  if (lastProcessed === 0) {
-    await client.simulateContract({
-      address: currentPool,
-      abi: abi,
-      functionName: "distributeProfit",
-      args: [],
-    });
-  }
 }
 
 // Update storage with progress
@@ -115,7 +105,7 @@ async function updateProgress(storage: any, newLastProcessed: number, poolsCount
 // Build callData array
 function buildCallData(stakingAddress: Address, currentPool: Address, lastProcessed: number, poolsToProcess: number): { to: Address; data: string }[] {
   const callData: { to: Address; data: string }[] = [];
-  
+
   // add calculateProfit call
   callData.push({
     to: stakingAddress,
@@ -125,7 +115,7 @@ function buildCallData(stakingAddress: Address, currentPool: Address, lastProces
       args: [BigInt(lastProcessed), BigInt(poolsToProcess)],
     }),
   });
-  
+
   // add currentPool distribution only after the FIRST batch (when lastProcessed was 0)
   if (lastProcessed === 0) {
     callData.push({
@@ -137,7 +127,7 @@ function buildCallData(stakingAddress: Address, currentPool: Address, lastProces
       }),
     });
   }
-  
+
   return callData;
 }
 
@@ -167,9 +157,11 @@ Web3Function.onRun(async (context: Web3FunctionContext) => {
         abi: abi,
         functionName: "currentPool",
         args: [],
+        authorizationList: undefined
       }) as Promise<Address>,
       client.readContract({
         address: stakingAddress,
+        authorizationList: undefined,
         abi: abi,
         functionName: "getActivePoolCount",
         args: [],
@@ -182,7 +174,7 @@ Web3Function.onRun(async (context: Web3FunctionContext) => {
     // get progress from storage
     const lastProcessed = await getProgress(storage, currentCycle);
     const remainingPools = Number(poolsCount) - lastProcessed;
-    
+
     if (remainingPools <= 0) {
       await storage.set("calculateProgress", "");
       return {
@@ -190,7 +182,7 @@ Web3Function.onRun(async (context: Web3FunctionContext) => {
         message: "All pools already processed for current cycle"
       };
     }
-    
+
     // find pool count that fits gas limit
     let poolsToProcess: number;
     try {
@@ -199,10 +191,10 @@ Web3Function.onRun(async (context: Web3FunctionContext) => {
       console.warn("fallback if estimation fails:", error);
       poolsToProcess = Math.min(remainingPools, 100);
     }
-    
+
     // build call data
     const callData = buildCallData(stakingAddress, currentPool, lastProcessed, poolsToProcess);
-    
+
     // simulate calls to ensure they won't fail
     try {
       await simulateContractCalls(client, stakingAddress, currentPool, lastProcessed, poolsToProcess);
@@ -212,7 +204,7 @@ Web3Function.onRun(async (context: Web3FunctionContext) => {
       const newLastProcessed = lastProcessed + poolsToProcess;
       // only update storage after successful simulation
       await updateProgress(storage, newLastProcessed, Number(poolsCount), currentCycle);
-      
+
     } catch (error) {
       console.error("Final simulation failed - calls would revert:", error);
       return {
@@ -220,13 +212,13 @@ Web3Function.onRun(async (context: Web3FunctionContext) => {
         message: `Simulation failed: ${error instanceof Error ? error.message : 'Unknown error'}`
       };
     }
-    
+
     // simulation passes
     return {
       canExec: true,
       callData,
     };
-    
+
   } catch (error) {
     console.error("Error in calculate function:", error);
     return {
