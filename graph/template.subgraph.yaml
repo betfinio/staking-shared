@@ -34,7 +34,8 @@ dataSources:
         - event: Staked(indexed address,uint256)
           handler: handleStaked
         - event: Withdraw(indexed address,uint256)
-          handler: handleWithdraw
+          handler: handleConservativeWithdraw
+          receipt: true
       file: ./src/conservative-staking.ts
   - kind: ethereum
     name: DynamicStaking
@@ -62,6 +63,9 @@ dataSources:
           handler: handleStaked
           calls:
             pool: DynamicStaking[event.address].currentPool()
+        - event: Withdraw(indexed address)
+          handler: handleDynamicWithdraw
+        
       file: ./src/dynamic-staking.ts
 templates:
   - kind: ethereum/contract
